@@ -46,9 +46,12 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Materials\Ideas.cs" />
+     <Compile Include="Assets\Player\HUD\HUD.cs" />
      <Compile Include="Assets\Player\Player.cs" />
      <Compile Include="Assets\Player\UserInput.cs" />
      <Compile Include="Assets\RTS\ResourceManager.cs" />
+     <Compile Include="Assets\World Object\WorldObject.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>
