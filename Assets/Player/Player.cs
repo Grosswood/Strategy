@@ -5,10 +5,12 @@ public class Player : MonoBehaviour {
 
 	public string username;
 	public bool human;
-
-	// Use this for initialization
-	void Start () {
+	public HUD hud;
+	public WorldObject SelectedObject { get; set; }
 	
+	void Start ()
+	{
+		hud = GetComponentInChildren< HUD >();
 	}
 	
 	// Update is called once per frame
