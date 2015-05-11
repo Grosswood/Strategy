@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using RTS;
 
 public class WorldObject : MonoBehaviour {
 
@@ -10,11 +11,21 @@ public class WorldObject : MonoBehaviour {
 	protected Player player;
 	protected string[] actions = {};
 	protected bool currentlySelected = false;
+	protected Bounds selectionBounds;
+	protected Rect playingArea = new Rect(0.0f, 0.0f, 0.0f, 0.0f);
 
 	protected virtual void Awake() {
-		
+		selectionBounds = ResourceManager.InvalidBounds;
+		CalculateBounds();
 	}
-	
+
+	public void CalculateBounds() {
+		selectionBounds = new Bounds(transform.position, Vector3.zero);
+		foreach(Renderer r in GetComponentsInChildren< Renderer >()) {
+			selectionBounds.Encapsulate(r.bounds);
+		}
+	}
+
 	protected virtual void Start () {
 		player = transform.root.GetComponentInChildren< Player >();
 	}
@@ -23,11 +34,28 @@ public class WorldObject : MonoBehaviour {
 		
 	}
 	
-	protected virtual void OnGUI() {
+	protected virtual void OnGUI()
+	{
+		if(currentlySelected) DrawSelection();
 	}
 
-	public void SetSelection(bool selected) {
+	protected virtual void DrawSelectionBox(Rect selectBox)
+	{
+		GUI.Box(selectBox, "");
+	}
+
+	private void DrawSelection() {
+		GUI.skin = ResourceManager.SelectBoxSkin;
+		Rect selectBox = WorkManager.CalculateSelectionBox(selectionBounds, playingArea);
+		//Draw the selection box around the currently selected object, within the bounds of the playing area
+		GUI.BeginGroup(playingArea);
+		DrawSelectionBox(selectBox);
+		GUI.EndGroup();
+	}
+
+	public void SetSelection(bool selected, Rect playingArea) {
 		currentlySelected = selected;
+		if(selected) this.playingArea = playingArea;
 	}
 
 	public string[] GetActions() {
@@ -49,9 +77,9 @@ public class WorldObject : MonoBehaviour {
 
 	private void ChangeSelection(WorldObject worldObject, Player controller) {
 		//this should be called by the following line, but there is an outside chance it will not
-		SetSelection(false);
-		if(controller.SelectedObject) controller.SelectedObject.SetSelection(false);
+		SetSelection(false, playingArea);
+		if(controller.SelectedObject) controller.SelectedObject.SetSelection(false, playingArea);
 		controller.SelectedObject = worldObject;
-		worldObject.SetSelection(true);
+		worldObject.SetSelection(true, controller.hud.GetPlayingArea());
 	}
 }
